@@ -1,94 +1,51 @@
-<!DOCTYPE html>
+<!DOCTYPE HTML>
+<!--
+	Aerial by HTML5 UP
+	html5up.net | @ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
 <html>
-<style>
-body, html {
-    height: 100%;
-    margin: 0;
-}
+	<head>
+		<title>Amir Shahatit</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<!--[if lte IE 8]><script src="assets/js/ie/html5shiv.js"></script><![endif]-->
+		<link rel="stylesheet" href="assets/css/main.css" />
+		<!--[if lte IE 8]><link rel="stylesheet" href="assets/css/ie8.css" /><![endif]-->
+		<!--[if lte IE 9]><link rel="stylesheet" href="assets/css/ie9.css" /><![endif]-->
+	</head>
+	<body class="loading">
+		<div id="wrapper">
+			<div id="bg"></div>
+			<div id="overlay"></div>
+			<div id="main">
 
-li img {
-  float: left;
-  margin: 0 15px 0 0;
-}
+				<!-- Header -->
+					<header id="header">
+						<h1>Amir Shahatit</h1>
+						<p>Software Engineer &nbsp;&bull;&nbsp; Tutor &nbsp;&bull;&nbsp; Ice Cream Enthusiast</p>
+						<nav>
+							<ul>
+								<li><a href="http://github.com/amir656" class="icon fa-github"><span class="label">Github</span></a></li>
+								<li><a href="mailto:ashahatit@berkeley.edu" class="icon fa-envelope-o"><span class="label">Email</span></a></li>
+								<li><a href="http://linkedin.com/in/amir-shahatit" class="icon fa-linkedin"><span class="label">LinkedIn</span></a></li>
+								<li><a href="./assets/resume.pdf" class="icon fa-file-text-o"><span class="label">Resume</span></a></li>
+							</ul>
+						</nav>
+					</header>
 
-li p {
-  font: 200 12px/1.5 Georgia, Times New Roman, serif;
-  color: white;
-}
+				<!-- Footer -->
+					<footer id="footer">
+						<span class="copyright">&copy; Design: <a href="http://html5up.net">HTML5 UP</a>.</span>
+					</footer>
 
-li {
-  padding: 10px;
-  overflow: auto;
-}
-
-li:hover {
-  background: #eee;
-  cursor: pointer;
-}
-
-.bgimg {
-    background-image: url('./Assets/bkgImg.jpg');
-    height: 100%;
-    background-position: center;
-    background-size: cover;
-    position: relative;
-    color: white;
-    font-family: "Courier New", Courier, monospace;
-    font-size: 25px;
-}
-
-.topleft {
-    position: absolute;
-    top: 0%;
-    left: 1%;
-    font-family: "Courier New", Courier, monospace;
-    font-size: 25px;
-}
-
-.bottomleft {
-    position: absolute;
-    bottom: 0%;
-    left: 1%;
-    color: white;
-    font-family: "Courier New", Courier, monospace;
-    font-size: 25px;
-}
-
-.middle {
-    position: absolute;
-    top: 25%;
-    right: 75%;
-    left: 25%;
-    bottom: 25%;
-    text-align: center;
-    color: white;
-}
-a {
-    color :black;
-}
-
-hr {
-    margin: auto;
-    width: 40%;
-}
-a {
-    color: white;
-}
-</style>
-<body>
-<div class="bgimg">
-    <div class="topleft">
-        <p> Amir Shahatit</p>
-        <p> Check out my 
-            <a href= "https://www.linkedin.com/in/amir-shahatit/" target="_blank">LinkedIn</a> 
-        </p>
-        <p> Hey Federico, I linked those projects you were interested in 
-            <a href = "resume.html"> here. </a> 
-        </p>
-    </div>
-    <div class="bottomleft">
-        <p>Developer, Tutor, and Ice Cream Enthusiast</p>
-    </div>
-</div>
-</body>
+			</div>
+		</div>
+		<!--[if lte IE 8]><script src="assets/js/ie/respond.min.js"></script><![endif]-->
+		<script>
+			window.onload = function() { document.body.className = ''; }
+			window.ontouchmove = function() { return false; }
+			window.onorientationchange = function() { document.body.scrollTop = 0; }
+		</script>
+	</body>
 </html>
