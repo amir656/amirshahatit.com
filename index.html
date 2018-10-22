@@ -1,59 +1,199 @@
-<!DOCTYPE HTML>
-<!--
-	Aerial by HTML5 UP
-	html5up.net | @ajlkn
-	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
--->
-<html>
-	<head>
-		<title>Amir Shahatit</title>
-		<meta charset="utf-8" />
-		<meta name="viewport" content="width=device-width, initial-scale=1" />
-		<!--[if lte IE 8]><script src="assets/js/ie/html5shiv.js"></script><![endif]-->
-		<link rel="stylesheet" href="assets/css/main.css" />
-		<!--[if lte IE 8]><link rel="stylesheet" href="assets/css/ie8.css" /><![endif]-->
-		<!--[if lte IE 9]><link rel="stylesheet" href="assets/css/ie9.css" /><![endif]-->
-	</head>
-	<body class="loading">
-		<div id="wrapper">
-			<div id="bg"></div>
-			<div id="overlay"></div>
-			<div id="main">
+<!doctype html>
 
-				<!-- Header -->
-				<header id="header">
-					<h1>Amir Shahatit</h1>
-					<p>Software Engineer &nbsp;&bull;&nbsp; Tutor &nbsp;&bull;&nbsp; Ice Cream Enthusiast</p>
-					<nav>
-						<ul>
-							<li>
-								<a href="http://github.com/amir656" class="icon fa-github" target="_blank" ></a>
-							</li>
-							<li>
-								<a href="mailto:ashahatit@berkeley.edu" class="icon fa-envelope-o"></a>
-							</li>
-							<li>
-								<a href="http://linkedin.com/in/amir-shahatit" class="icon fa-linkedin"  target="_blank"></a>
-							</li>
-							<li>
-								<a href="./assets/resume.pdf" class="icon fa-file-text-o"></a>
-							</li>
-						</ul>
-					</nav>
-				</header>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
 
-				<!-- Footer -->
-					<footer id="footer">
-						<span class="copyright">&copy; Design: <a href="http://html5up.net">HTML5 UP</a>.</span>
-					</footer>
+  <title>Amir Shahatit</title>
+  <meta name="description" content="Amir Shahatit">
+  <meta name="author" content="Amir Shahatit">
 
-			</div>
-		</div>
-		<!--[if lte IE 8]><script src="assets/js/ie/respond.min.js"></script><![endif]-->
-		<script>
-			window.onload = function() { document.body.className = ''; }
-			window.ontouchmove = function() { return false; }
-			window.onorientationchange = function() { document.body.scrollTop = 0; }
-		</script>
-	</body>
+  <!-- <link rel="stylesheet" href="css/styles.css?v=1.0"> -->
+  <style>
+  * {
+    font-family: Verdana;
+    font-style: normal;
+    font-variant-ligatures: normal;
+    font-variant-caps: normal;
+    font-variant-numeric: normal;
+    font-weight: normal;
+    font-stretch: normal;
+  }
+  /* Style the tab */
+div.tab {
+    overflow: hidden;
+    border: 0px;
+    text-align: center;
+    margin: 0;
+    margin-bottom: 30px;
+}
+/* Style the buttons inside the tab */
+div.tab button {
+    background-color: inherit;
+    color: #a0a0a0;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    padding: 14px 16px;
+    transition: 0.3s;
+    margin: 0 auto;
+    display: inline;
+    width: 200px;
+    font-size: 16px;
+}
+/* Change background color of buttons on hover */
+div.tab button:hover {
+    /*background-color: #ddd;*/
+    color: #2e2e2e;
+}
+svg {
+  fill: #000000;
+  transition: 0.3s;
+}
+svg:hover {
+  fill: #555555;
+  transition: 0.3s;
+}
+/* Create an active/current tablink class */
+div.tab button.active {
+    /*background-color: #ccc;*/
+    color: #2e2e2e;
+}
+/* Style the tab content */
+.tabcontent {
+    display: none;
+    padding: 6px 12px;
+    border: 0px;
+    border-top: none;
+    text-align: center;
+    margin: 0 auto;
+    color: #9fcecc;
+    width: 75%;
+}
+name {
+  font-size: 60px;
+  color: #000000;
+}
+name:after {
+    content:"\a\a";
+    white-space:pre;
+}
+h {
+  font-size: 30px;
+}
+h:after {
+    content:"\a\a";
+    white-space:pre;
+}
+ti {
+  font-size: 20px;
+  line-height: 30px;
+}
+/*ti:after {
+    content:"\a";
+    white-space:pre;
+}*/
+te {
+  font-size: 14px;
+}
+te:after {
+    content:"\a\a";
+    white-space:pre;
+}
+te:before {
+    content:"\a";
+    white-space:pre;
+}
+div.copy {
+  margin-top: 20px;
+  font-size: 12px;
+  text-align: center;
+}
+a {
+  color: #878787;
+}
+table {
+    width: 20%;
+    margin-left: auto;
+    margin-right: auto;
+}
+</style>
+
+<script>
+function openTab(evt, tabName) {
+    // Declare all variables
+    var i, tabcontent, tablinks;
+    // Get all elements with class="tabcontent" and hide them
+    tabcontent = document.getElementsByClassName("tabcontent");
+    for (i = 0; i < tabcontent.length; i++) {
+        tabcontent[i].style.display = "none";
+    }
+    // Get all elements with class="tablinks" and remove the class "active"
+    tablinks = document.getElementsByClassName("tablinks");
+    for (i = 0; i < tablinks.length; i++) {
+        tablinks[i].className = tablinks[i].className.replace(" active", "");
+    }
+    // Show the current tab, and add an "active" class to the button that opened the tab
+    document.getElementById(tabName).style.display = "block";
+    evt.currentTarget.className += " active";
+}
+</script>
+
+</head>
+
+<body>
+
+  <div class="tab">
+    <button class="tablinks active" onclick="openTab(event, 'Home')">Home</button>
+    <button class="tablinks" onclick="openTab(event, 'Experience')">Experience</button>
+    <button class="tablinks" onclick="openTab(event, 'Portfolio')">Portfolio</button>
+    <button class="tablinks" onclick="openTab(event, 'Contact')">Contact</button>
+  </div>
+
+  <div id="Home" class="tabcontent" style="display: block;">
+    <name>Amir Shahatit</name>
+    <h> I'm a student at UC Berkeley majoring in Computer Science graduating in 2020. The majority of my work experience has been as a backend software engineer, but I have also been looking into computer security research. I would love to work on a research project that could make people's lives easier.</h>
+    <table>
+      <tr>
+        <td>
+          <a href="https://github.com/amir656"><svg class="icon" height="32" viewBox="0 0 16 16" width="40"></svg></a>
+        </td>
+        <td>
+          <a href="resume.pdf"><svg class="icon" height="32" viewBox="0 0 30 32" width="40"></svg></a>
+        </td>
+        <td>
+          <a href="https://www.linkedin.com/in/amirshahatit/"><svg class="icon" height="32" viewBox="0 0 30 32" width="40"></svg></a>
+        </td>
+      </tr>
+    </table>
+  </div>
+
+  <div id="Experience" class="tabcontent">
+    <h>Experience</h>
+    <ti>Software Engineering Intern at Voleon, May 2018 - August 2018</ti>
+    <te>Worked on scheduling of large data processing jobs with Apache Airflow and Mesos.</te>
+    <ti>Software Engineering Intern at Intuit, May 2017 - August 2017</ti>
+    <te>Worked on a system for assigning taxpayers to tax professionals and recording legal consents.</te>
+    <ti>Teaching Assistant, CompSci 88 Fall 2018, Data 8 Fall 2017 - Spring 2018</ti>
+    <te>Created course content, ran office hours, and taught a lab of 35 students.</te>
+</div>
+
+  <div id="Portfolio" class="tabcontent">
+    <h>Portfolio</h>
+    <ti><a href="resume.pdf">Resume</a></ti>
+    <te></te>
+    <ti><a href="https://cs88-website.github.io/lab/lab03/">Course Content</a></ti>
+    <te>One of the assignments I've written for the CS 88 Course staff.</te>
+    <ti><a href="https://github.com/leoadberg/Intuit-Hackathon-Project">Jumbo Jobs</a></ti>
+    <te>This website was made for an Intuit-sponsored hackathon. It allowed the user to search for specific industries in different locations to see job growth, average income, and more. Because it used PHP and Python, the backend is no longer running, but all the code is still available!</te>
+</div>
+
+  <div id="Contact" class="tabcontent">
+    <h>Contact</h>
+    <ti>Send me an email at <a href="mailto:ashahatit@berkeley.edu" target="_top">ashahatit@berkeley.edu</a>.</ti>
+  </div>
+
+<div class="copy">&copy; 2018 Amir Shahatit</div>
+
+</body>
 </html>
