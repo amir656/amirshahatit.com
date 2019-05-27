@@ -1,0 +1,322 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<style>
+    div.padded {
+      padding-top: 0px;
+      padding-right: 100px;
+      padding-bottom: 0.25in;
+      padding-left: 100px;
+      font-size: 24px;
+    }
+  </style>
+<title>Amir Shahatit  |  CS 184</title>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<link rel="stylesheet" type="text/css" href="style.css" media="screen" />
+</head>
+<body>
+<br />
+<h1 align="middle">Assignment 3: PathTracer</h1>
+    <h2 align="middle">Amir Shahatit</h2>
+
+    <div class="padded">
+        <p>
+            Ray tracing. What a word. Tears, both of joy and desperation. Deubgging for hours to find that you were using floats instead of doubles 3 parts ago. What a trip. Here we traced a ray along the entire pipeline. We started out by determining when it intersects with different objects in our scene. Then, we made it hella faster by using the slickest of the data structres, the BVH. Now that things were running at a sane speed, we decided to make the lighting more realilistic by modeling the light coming from the sources as either uniformly eminating in the hemisphere surrounding the light, or by implementing a slick monte carlo estimation of the light. Next, we took that light model and let the rays bounce around more than once so we could get more accurately model the infinite potential bounces of a normal ray of light. Finally, we optimized our pixel sampling so we don't have to wait days to get a 2048 sampled image to render.
+        </p>
+
+        <h2 align="middle">Part 1: Intersect</h2>
+        <p>
+            <h3> Ray generation </h3>
+                <p>
+                    We generate rays by pretending a ray is going from the pixel to the light source. This is so we don't waste time chasing rays that don't hit anything in the secen. We geometrically create rays by specifying an origin and a direction and we find intersections based on the shape of the primitive in the scene. Primitives are just basic shapes that are used to create the scene. For example, the CBspheres one, is five rectangles aranged in a box, with an additional rectangle as a window and two spheres showing prominently inside the box.
+                 </p>
+            <h3> Triangle Intersection </h3>
+                <p>
+                    With some hefty help from the slides, I implemented triangle intersection, with the Moller Trumbore Algorithm. It calculates the time of intersection and the barycentric coordinates of the intersection point. What the algorithm really does is find how many direction vectors we need to line up for the ray to intersect the triangle. Next, it finds the barycentric coordinates of the point, so we can check the sign and see if it actually intersects. We determine this by checking if the time is within tmin, tmax and if all of the barycentric coordinates are positive.
+                </p>
+            <h3> Sphere Intersection </h3>
+                <p>
+                    With some hefty help from a different set of slides, I implemented sphere intersection, with a modified quadratic formula. We essentially just found the solutions to the quadratic and checked if they were valid intersection points.
+                </p>
+            <h3> Normal shading examples</h3>
+            <div align="center">
+                <table style="width=100%">
+                    <tr>
+                        <td align="middle">
+                        <img src="images/pt1Bunny.png" width="480px" />
+                        <figcaption align="middle">It's not even Easter yet</figcaption>
+
+                        <td align="middle">
+                        <img src="images/pt1Sphere.png" width="480px" />
+                        <figcaption align="middle">Spherical duuude</figcaption>
+
+                    </tr>
+                    <td align="middle">
+                    <img src="images/bvh4.png" width="480px" />
+                    <figcaption align="middle">Everyone loves Lucy</figcaption>
+                </table>
+            </div>
+<br/>
+        <h2 align="middle">Part 2: BVH</h2>
+            <h3> Construction </h3>
+                <p>
+                    We construct our BVH by first constructing a bbox that encompasses all of the primitives in our scene. Then we sort the objects and sort them so we can split them in the middle. This makes each branch have half of the objects ensuring that the tree is of minimum depth. Therefore the binary searching through the tree takes the minimal amount of time. Then we recursively construct a BVH node until the size of the array of primitives is less than or equal to our max_leaf size.
+                 </p>
+            <h3> Intersection </h3>
+                <p>
+                    For intersection, I compute the max value for each dimension for the bbox, subtract the origin and divide by the direction of the ray. I then take the max of the minimum values and the min of the maxium values to get the min and max respectively. These form an interval for where the ray intersect with the bbox.
+                </p>
+                <p>
+                    Here's some example output that shows the difference in number of required intersection tests before and after implementing the BVH.
+                </p>
+                <div align="center">
+                    <table style="width=100%">
+                        <tr>
+                            <td align="middle">
+                            <img src="images/bvh1.png" width="480px" />
+                            <figcaption align="middle">Slower than a tortoise named tortelini</figcaption>
+                            <td align="middle">
+                            <img src="images/bvh2.png" width="480px" />
+                            <figcaption align="middle">MOOve out the way</figcaption>
+                        </tr>
+                    </table>
+                </div>
+                <h3> Analysis </h3>
+                    <p>
+                        The BVH functions very similarly to a binary tree asymptotically. At each split, you get to ignore approximately half of the primitives. You then recursively split until you hit a leaf_node. You will execute approximately ` log(num_primitives  / max_leaf_size) ` splits before running intersection tests on at most ` max_leaf_size ` primitives per leaf node that the ray hits, so for ` max_leaf_size = 4 ` and ` num_primitives = 1000 ` we will perform 8 splits and run 4 intersection tests per BVH_leaf_node that the ray hits. If we did not use the acceleration, we would try to intersect the ray with every primitive in the scene making us perform 1000*num_rays tests as opposed to num_rays*(num_primitives in leaf node bbox that intersect) and ` num_primitives in leaf node bbox that intersect ` is generally much lower than the num_primitives. In the example above, we see that implementing the BVH sped up our render time for the cow 140 times. We averaged .3% of the required ray intersection tests.
+                    </p>
+                <p>
+                    Here's some of the more complicated scenes that would've taken me forever to render without the blessed BVH.
+                </p>
+                <div align="center">
+                    <table style="width=100%">
+                        <tr>
+                            <td align="middle">
+                            <img src="images/bvh3.png" width="480px" />
+                            <figcaption align="middle">Moo</figcaption>
+                            <td align="middle">
+                            <img src="images/bvh4.png" width="480px" />
+                            <figcaption align="middle">A gift from the BVH God</figcaption>
+                        </tr>
+                        <tr>
+                            <td align="middle">
+                            <img src="images/bvh5.png" width="480px" />
+                            <figcaption align="middle">Moo Pt2</figcaption>
+                            <td align="middle">
+                            <img src="images/bvh6.png" width="480px" />
+                            <figcaption align="middle">Plank world record</figcaption>
+                        </tr>
+                    </table>
+                </div>
+</br>
+            <h2 align="middle">Part 3: Direct illumination</h2>
+                <h3> A tale of two light sources </h3>
+                    <p>
+                        Hemisphere light sampling generates a light ray by sampling uniformly at random from the entire hemisphere eminating from the light source. For this method, we essentially just generate num_sample number of rays and check if they intersect the bvh. If it does, we factor in it's contribution to the color using the bsdf of the surface it hit and some other mathy factors to average everything in correctly. For Importance sampling, we think of drawing rays from our point to different locations on the light source. We can think of them as shadow rays if they intersect something in the scene, because then the light from the source is blocked. We proceed pretty similarly to the previous part except this time we only factor in the color if there are not intersections, ie. there's a path from the point to the light. This is a more efficient method as we know our ray has the potential to hit the light source. Look at the next section for more details.
+                    </p>
+                <h3> One scene with all the options </h3>
+                <p> Notice how the noise levels in soft shadows decrease so sharply between one and sixteen </p>
+                <div align="center">
+                    <table style="width=100%">
+                        <tr>
+                            <td align="middle">
+                            <img src="images/dragon_1_1.png" width="480px" />
+                            <figcaption align="middle">One</figcaption>
+
+                            <td align="middle">
+                            <img src="images/dragon_4_1.png" width="480px" />
+                            <figcaption align="middle">Four</figcaption>
+
+                        </tr>
+                        <tr>
+                            <td align="middle">
+                            <img src="images/dragon_16_1.png" width="480px" />
+                            <figcaption align="middle">Sixteen</figcaption>
+
+                            <td align="middle">
+                            <img src="images/dragon_64_1.png" width="480px" />
+                            <figcaption align="middle">Sixty-Four</figcaption>
+
+                        </tr>
+                    </table>
+                </div>
+                <h3> Some results of Hemisphere</h3>
+                <div align="center">
+                    <table style="width=100%">
+                        <tr>
+                            <td align="middle">
+                            <img src="images/CBbunny_16_8.png" width="480px" />
+                            <figcaption align="middle">Bunny bunny bunny (16, 8 for dramatic effect)</figcaption>
+
+                            <td align="middle">
+                            <img src="images/CBsphere_16_8_hem.png" width="480px" />
+                            <figcaption align="middle">Ball Z (16, 8 for dramatic effect)</figcaption>
+
+                        </tr>
+                    </table>
+                </div>
+                <h3> Some results of Importance</h3>
+                <div align="center">
+                    <table style="width=100%">
+                        <tr>
+                            <td align="middle">
+                            <img src="images/CBbunny_64_32_importance.png" width="480px" />
+                            <figcaption align="middle">Bunnys are important (64, 32 because importance is sooo much faster)</figcaption>
+
+                            <td align="middle">
+                            <img src="images/dragon_64_32_importance.png" width="480px" />
+                            <figcaption align="middle">Dragon up!(American Dragon Jake Long) (64, 32 because importance is sooo much faster) </figcaption>
+
+                        </tr>
+                    </table>
+                </div>
+
+                <h3> Hemisphere vs light sampling Analysis </h3>
+                    <p>
+                        As I was getting into above, hemisphere sampling is much noisier at the same sample rate because each sample does less work. The importance sampling uses the power of good ole monte carlo to make our samples count for more and have more denoising power. The randomness of hemispheric sampling is actually to it's disservice as it cannot take advantage of the very different relative importance of different potential samples.
+                    </p>
+
+            <h2 align="middle">Part 4: Global illumination</h2>
+                    <h3> How'd we do it </h3>
+                    <p>
+                        So, what we did here was take a ray. If our depth is zero we just return the color of it if it's a light source. If our depths is bigger, then things get interesting. For a depth of one, we just kinda check if we intersect with anything and return it's color if we do. Sounds awfully familiar ha? That's cause we did it in part 3 so we just call that. Now is the juicy part, if our depth is greater than one, we want to get the indirect lighting on the point. So we just keep bouncing the ray until we hit our max_depth or russian roullete terminates it. There was a lotta nitty gritty details, but that's the main idea:)
+                    </p>
+
+                    <h3> Some global 1024s </h3>
+                    <p> Notice how the indirect and direct illumination interplay. We can see the colors from the walls on parts of the spheres because of the indirect illumination. WILD</p>
+                    <div align="center">
+                        <table style="width=100%">
+                            <tr>
+                                <td align="middle">
+                                <img src="images/1024-1.png" width="480px" />
+                                <figcaption align="middle">Nice bunny, pretty bunny</figcaption>
+
+                                <td align="middle">
+                                <img src="images/1024-2.png" width="480px" />
+                                <figcaption align="middle">Ooooo indirect illumination</figcaption>
+
+                            </tr>
+                        </table>
+                    </div>
+                    <h3> Direct vs indirect </h3>
+                    <p> Notice what happens to the light source. When we only have direct illumination, we only really see what is one bounce away. When we take that out for indirect illumination, we can't see the light anymore.</p>
+                    <div align="center">
+                        <table style="width=100%">
+                            <tr>
+                                <td align="middle">
+                                <img src="images/direct_only.png" width="480px" />
+                                <figcaption align="middle">Tell me how I'm supposed to breathe with no roof?</figcaption>
+
+                                <td align="middle">
+                                <img src="images/indirect_only.png" width="480px" />
+                                <figcaption align="middle">Who turned off? the light?</figcaption>
+
+                            </tr>
+                        </table>
+                    </div>
+
+                    <h3> CBunny dae! </h3>
+                    <p>
+                        Notice what happens to the light source at really low depths. It is the only thing showing! Why is that? Because at depth 0, we can only check if we are a light source or not. WHy's the roof gone for depth 1? Because nothing can make it back to the roof within one bounce. The middle ones don't seem to surprising, as you increase the depth, more surfaces become eligible to be illuminated. But why is 100 not super overexposed?? Russian roullete to the rescue! Because of Russian roullete we can depend on rays terminating before they can infect every surface, more precisely, the rays terminate within a couple of steps, likely fewer than 10.
+                    </p>
+                    <div align="center">
+                        <table style="width=100%">
+                            <tr>
+                                <td align="middle">
+                                <img src="images/CBbunny_1024_depth0.png" width="480px" />
+                                <figcaption align="middle">In the shalloooow</figcaption>
+
+                                <td align="middle">
+                                <img src="images/CBbunny_1024_depth1.png" width="480px" />
+                                <figcaption align="middle">What the roof?</figcaption>
+
+                            </tr>
+
+                            <tr>
+                                <td align="middle">
+                                <img src="images/CBbunny_1024_depth2.png" width="480px" />
+                                <figcaption align="middle">The roof is back</figcaption>
+
+                                <td align="middle">
+                                <img src="images/CBbunny_1024_depth3.png" width="480px" />
+                                <figcaption align="middle">Nice shadows</figcaption>
+                            </tr>
+
+                            <tr>
+                                <td align="middle">
+                                <img src="images/CBbunny_1024_depth5.png" width="480px" />
+                                <figcaption align="middle">Classic image</figcaption>
+
+                                <td align="middle">
+                                <img src="images/CBbunny_1024_depth100.png" width="480px" />
+                                <figcaption align="middle">it's over 9000</figcaption>
+                            </tr>
+                        </table>
+                    </div>
+                    <h3> CBunny dae 2! </h3>
+                    <p> Notice the power of da sample at reducing noise!</p>
+                    <div align="center">
+                        <table style="width=100%">
+                            <tr>
+                                <td align="middle">
+                                <img src="images/bunny_1.png" width="480px" />
+                                <figcaption align="middle">So loud</figcaption>
+
+                                <td align="middle">
+                                <img src="images/bunny_2.png" width="480px" />
+                                <figcaption align="middle">Can you put it down out there?</figcaption>
+
+                            </tr>
+
+                            <tr>
+                                <td align="middle">
+                                <img src="images/bunny_4.png" width="480px" />
+                                <figcaption align="middle">Now i can see</figcaption>
+
+                                <td align="middle">
+                                <img src="images/bunny_8.png" width="480px" />
+                                <figcaption align="middle">Nice shadows</figcaption>
+                            </tr>
+
+                            <tr>
+                                <td align="middle">
+                                <img src="images/bunny_16.png" width="480px" />
+                                <figcaption align="middle">Classic image</figcaption>
+
+                                <td align="middle">
+                                <img src="images/bunny_64.png" width="480px" />
+                                <figcaption align="middle">almost perfect</figcaption>
+                            </tr>
+                        </table>
+                        <table>
+                            <td align="middle">
+                            <img src="images/bunny_1024.png" width="480px" />
+                            <figcaption align="middle">last, but not least</figcaption>
+                        </table>
+                    </div>
+
+<h2 align="middle">Part 5: Adaptive sampling</h2>
+<p>
+    <h3> How'd we adapt </h3>
+        <p>
+            I followed the formula given in the slides with some slick modifications. We learned in class that division is the real slowdown, so I tried to move as much division I could out of my loops by calculating reciprocals once, then just using them. Besides that, I implemented the magic_eye test, my name for the I value we get from that 1.96 confidence interval value, and we got some cool results. Check em out:)
+         </p>
+    <h3> Adaptive sampling example</h3>
+    <div align="center">
+        <table style="width=100%">
+            <tr>
+                <td align="middle">
+                <img src="images/p5bunny.png" width="480px" />
+                <figcaption align="middle">The nicest of all of the bunnies.</figcaption>
+
+                <td align="middle">
+                <img src="images/p5bunny_rate.png" width="480px" />
+                <figcaption align="middle">Radioactive bunny</figcaption>
+
+            </tr>
+        </table>
+    </div>
+<br/>
+    </div>
+</body>
+</html>

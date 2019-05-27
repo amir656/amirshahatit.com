@@ -1,0 +1,216 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<style>
+    div.padded {
+      padding-top: 0px;
+      padding-right: 100px;
+      padding-bottom: 0.25in;
+      padding-left: 100px;
+    }
+  </style>
+<title>Amir Shahatit  |  CS 184</title>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<link rel="stylesheet" type="text/css" href="style.css" media="screen" />
+</head>
+<body>
+<br />
+<h1 align="middle">Assignment 3-2: PathTracer Upgrades</h1>
+    <h2 align="middle">Amir Shahatit</h2>
+
+    <div class="padded">
+        <p>We massively leveled up our raytracer in this assignment. First, we added support for mirror and glass surfaces. Then, we opened things up to all sorts of new microfaceted materials. Then we were mesmerized by environment lights and finally captivated by being able to change the depth of field </p>
+
+    <h2 align="middle">Part 1: Mirror and Glass</h2>
+ <!-- Point out the new multibounce effects that appear in each image. Explain how these bounce numbers relate to the particular effects that appear. -->
+        <p>Implementation notes:
+            <ul>
+                <li>
+                    For mirror/ glass reflection was a simple one line transformation.
+                </li>
+                <li>
+                    For Glass materials, we had to implement refraction. We used the refraction index and Snell's law to change the direction of the incoming ray.
+                </li>
+                <li>
+                    For the last part, we covered three cases, when total internal reflection occurs, normal reflection and refraction. We check for total internal reflection, then if it doesn't happen we essentially filp a coin with a special probability to determine if we should reflect or refract.
+                </li>
+            </ul>
+        </p>
+        <div align="center">
+            <table style="width=100%">
+                <tr>
+                    <td align="middle">
+                    <img src="images/part1/part1m0.png" width="480px" />
+                    <figcaption align="middle">Notice how with 0 bounces the balls and ceiling are black. This is because we only have direct lighting</figcaption>
+                    <td align="middle">
+                    <img src="images/part1/part1m1.png" width="480px" />
+                    <figcaption align="middle">This one is super interesting. The ceiling and balls are now colored, but the reflection of them is not. This is because it takes an extra bounce for the reflected materials to be colored. It's as if in the reflected world, there is only direct lighting.</figcaption>
+                </tr>
+                <tr>
+                    <td align="middle">
+                    <img src="images/part1/part1m2.png" width="480px" />
+                    <figcaption align="middle"> For 2 bounces, we finally have the full picture. Or so I thought! The back ball is actually reflecting what the front ball looked like in the previous render </figcaption>
+                    <td align="middle">
+                    <img src="images/part1/part1m3.png" width="480px" />
+                    <figcaption align="middle">It takes 3 bounces to see the caustic in the bottom of the glass ball. This is expected as the light hits the glass ball, refracts inside the ball, and refracts back out to show light.</figcaption>
+                </tr>
+                <tr>
+                    <td align="middle">
+                    <img src="images/part1/part1m4.png" width="480px" />
+                    <figcaption align="middle">Now we are starting to converge, there doesn't seem to be any weird additional effects  </figcaption>
+                    <td align="middle">
+                    <img src="images/part1/part1m5.png" width="480px" />
+                    <figcaption align="middle">One interesting thing to note about 4 vs 5 is that 5 seems to be noisier. That makes sense as more bounces introduces more reflections/refractions that could cause noise.</figcaption>
+                </tr>
+                <tr>
+                    <td align="middle">
+                    <img src="images/part1/part1m100.png" width="480px" />
+                    <figcaption align="middle">Thanks to Russian Roullete, 100 is not very different from 5.</figcaption>
+                </tr>
+            </table>
+        </div>
+        <h2 align="middle">Part 2: Microfacet</h2>
+        <p>Implementation notes:
+            <ul>
+                We implemented three main functions here:
+                one to get the Normal Distribution Function, one to get the Fresnel term, and one to  sample the BRDF.
+                <li>
+                    The normal distribution function defines the normals of the microfacets. We use the Beckmann distribution to figure out our normal distribution. We also use alpha, where a higher alpha means our surface is more diffuse, and lower alpha means our surface is glossier.
+                </li>
+                <li>
+                    We simplified this part by only calculating the fresnel term at the the red, green and blue wavelengths.
+                </li>
+                <li>
+                    Finally we replaced cosine sampling with imprtance sampling. Pdfs resembling the normal distribution function are given higher priority, because that reduces noise and makes convergence faster.
+                </li>
+            </ul>
+            <div align="center">
+                <table style="width=100%">
+                    <tr>
+                        <td align="middle">
+                        <img src="images/part2/a005.png" width="480px" />
+                        <figcaption align="middle">alpha=.005 It's wayy to loud in this picture, hopefully a higher alpha will reduce the noise, </figcaption>
+                        <td align="middle">
+                        <img src="images/part2/a05.png" width="480px" />
+                        <figcaption align="middle">alpha=.05 Noise is a lot lower in this picture, but there are still a lot of roughness in the picture.</figcaption>
+                    </tr>
+                    <tr>
+                        <td align="middle">
+                        <img src="images/part2/a25.png" width="480px" />
+                        <figcaption align="middle">alpha=.25 Much less noise in this picture. It is much easier to see the actual material of the dragon here.</figcaption>
+                        <td align="middle">
+                        <img src="images/part2/a5.png" width="480px" />
+                        <figcaption align="middle">alpha=.5 Here, the matteness is very clear and the shape of the dragon is fully discernible. We also have mucccch less noise.</figcaption>
+                    </tr>
+                    <tr>
+                        <td align="middle">
+                        <img src="images/part2/cosine.png" width="480px" />
+                        <figcaption align="middle">Bunny with uniform cosine hemisphere samplining: hella noise and practically no convergence.</figcaption>
+                        <td align="middle">
+                        <img src="images/part2/importance.png" width="480px" />
+                        <figcaption align="middle">Bunny with importance samplining: remarkably nicer</figcaption>
+                    </tr>
+                    <tr>
+                        <td align="middle">
+                        <img src="images/part2/sodiumDragon.png" width="480px" />
+                        <figcaption align="middle">Sodium with some low specs</figcaption>
+                        <td align="middle">
+                        <img src="images/part2/sodiumDragon2.png" width="480px" />
+                        <figcaption align="middle">Sodium with some better specs</figcaption>
+                    </tr>
+                </table>
+            </div>
+    <h2 align="middle">Part 3: environment light</h2>
+        <p>Implementation notes:</p>
+            <ul>
+                This part progressed in 3 phases
+                <li>
+                    First, we implemented uniform sampling, by just randomly sampling from the sphere and checking the environment map for the corresponding value.
+                </li>
+                <li>
+                    Then we calculated probability tables for the marginal and conditional distributions. This was particularly error prone process with a lot of steps that I had difficulty keeping straight.
+                </li>
+                <li>
+                    Finally we sampled using those probability tables so we could focus on the probabilitically important features of the scene.
+                </li>
+            </ul>
+        <div align="center">
+            <table style="width=100%">
+                <tr>
+                    <td align="middle">
+                    <img src="images/part3/field.jpg" width="480px" />
+                    <figcaption align="middle">Field scene jpg</figcaption>
+                    <td align="middle">
+                    <img src="images/part3/probability_debug.png" width="480px" />
+                    <figcaption align="middle">Field scene probability distribution</figcaption>
+                </tr>
+                <tr>
+                    <td align="middle">
+                    <img src="images/part3/unlit_basic_bunny_uniform.png" width="480px" />
+                    <figcaption align="middle">Basic Uniform sampling is noisy, with very little convergence. You can't really see any of the details of the bunny with any level of clarity.</figcaption>
+                    <td align="middle">
+                    <img src="images/part3/unlit_basic_bunny_importance.png" width="480px" />
+                    <figcaption align="middle">Basic Importance sampling looks a lot better! Way less noise, and the bunny's features can actually be seen. Especially around the tail.</figcaption>
+                </tr>
+                <tr>
+                    <td align="middle">
+                    <img src="images/part3/unlit_cu_bunny_uniform.png" width="480px" />
+                    <figcaption align="middle">CU Microfacet Uniform doesn't seem to terrible. Like it's really noisy, but you can kinda make stuff out. </figcaption>
+                    <td align="middle">
+                    <img src="images/part3/unlit_cu_bunny_importance.png" width="480px" />
+                    <figcaption align="middle">CU Microfacet Importance Then, you look at this one and you can tell where light is reflecting and you can tell what kind of material it is.</figcaption>
+                </tr>
+            </table>
+        </div>
+
+    <h2 align="middle">Part 4: Depth of Field</h2>
+    <div align="center">
+        <p>
+            For depth of field, we used the diagram in the spec to visualize the way a thin lens operates. So far all of our stuff has been rendered assuming a pinhole camera, but our eyes work very different from that. This helps us model our eyes more cloesly. Pinhole cameras also show everything in the view of camera as perfectly in focus. The ideal thin-lens has no actual thickness. It allows us to show focus and blur in a picture.
+        </p>
+    </div>
+        <div align="center">
+            <p> Focus stack 4.9, 5.3, 6.0, 6.7 </p>
+            <table style="width=100%">
+                <tr>
+                    <td align="middle">
+                    <img src="images/part4/4.9.png" width="480px" />
+                    <figcaption align="middle">4.9</figcaption>
+                    <td align="middle">
+                    <img src="images/part4/5.3.png" width="480px" />
+                    <figcaption align="middle">5.3</figcaption>
+                </tr>
+                <tr>
+                    <td align="middle">
+                    <img src="images/part4/6.0.png" width="480px" />
+                    <figcaption align="middle">6.0</figcaption>
+                    <td align="middle">
+                    <img src="images/part4/6.7.png" width="480px" />
+                    <figcaption align="middle">6.7</figcaption>
+
+                </tr>
+            </table>
+            <p> Aperture stack 0.25, 0.3533, 0.5, 0.707</p>
+
+            <table style="width=100%">
+                <tr>
+                    <td align="middle">
+                    <img src="images/part4/4.7.png" width="480px" />
+                    <figcaption align="middle">0.25</figcaption>
+                    <td align="middle">
+                    <img src="images/part4/0.35.png" width="480px" />
+                    <figcaption align="middle">0.3533</figcaption>
+                </tr>
+                <tr>
+                    <td align="middle">
+                    <img src="images/part4/0.5.png" width="480px" />
+                    <figcaption align="middle">0.5</figcaption>
+                    <td align="middle">
+                    <img src="images/part4/0.70.png" width="480px" />
+                    <figcaption align="middle">0.707</figcaption>
+                </tr>
+            </table>
+        </div>
+    </div>
+</body>
+</html>

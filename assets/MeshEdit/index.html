@@ -1,0 +1,318 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<style>
+  body {
+    padding: 0px;
+    width: 1200px;
+    margin: auto;
+    text-align: left;
+    font-weight: 300;
+    font-family: 'Open Sans', sans-serif;
+    color: #121212;
+  }
+  h1, h2, h3, h4 {
+    font-family: 'Source Sans Pro', sans-serif;
+  }
+</style>
+<title>CS 184 Mesh Editor</title>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<link href="https://fonts.googleapis.com/css?family=Open+Sans|Source+Sans+Pro" rel="stylesheet">
+</head>
+
+
+<body>
+
+<h1 align="middle">CS 184: Computer Graphics and Imaging, Spring 2019</h1>
+<h1 align="middle">Project 2: Mesh Editor</h1>
+<h2 align="middle">Amir Shahatit</h2>
+
+<br><br>
+
+<div>
+
+<h2 align="middle">Overview</h2>
+<p>
+    This was a cool throwback to 61b, looking intently at data structures and working with a kind of large codebase. Implementing Casteljau's algo was pretty straightforward. But when it came to half-edges, pictures were definitely necessary. <a href="http://15462.courses.cs.cmu.edu/fall2015content/misc/HalfedgeEdgeOpImplementationGuide.pdf">This</a> was a real blessing.
+</p>
+
+<h2 align="middle">Section I: Bezier Curves and Surfaces</h2>
+
+<h3 align="middle">Part 1: Bezier curves with 1D de Casteljau subdivision</h3>
+
+<p>
+    De Casteljau's algorithm allows you to define a curve between points by recursively finding interpolated midpoints until you meet at some middle point which the curve passes through. We implemented this in part 1, by showing how to reduce an iteration of the algorithm with n points to one with n-1 new points. You essentially replace the n points with the interpolation of each pair of points in order. [1, 2, 3] --> [lerp(1, 2), lerp(2,3)]
+</p>
+
+<p>Here's my curvy creation!</p>
+
+<div align="middle">
+  <table style="width=100%">
+    <tr>
+      <td>
+        <img src="images/part1/TimeStep1.png" align="middle" width="600px"/>
+        <figcaption align="middle"> Time Step: 1.</figcaption>
+      </td>
+      <td>
+        <img src="images/part1/TimeStep2.png" align="middle" width="600px"/>
+        <figcaption align="middle"> Time Step: 2.</figcaption>
+      </td>
+    </tr>
+    <br>
+    <tr>
+      <td>
+        <img src="images/part1/TimeStep3.png" align="middle" width="600px"/>
+        <figcaption align="middle"> Time Step: 3.</figcaption>
+      </td>
+      <td>
+        <img src="images/part1/TimeStep4.png" align="middle" width="600px"/>
+        <figcaption align="middle"> Time Step: 4.</figcaption>
+      </td>
+    </tr>
+    <br>
+    <tr>
+      <td>
+        <img src="images/part1/TimeStep5.png" align="middle" width="600px"/>
+        <figcaption align="middle"> Time Step: 5.</figcaption>
+      </td>
+      <td>
+        <img src="images/part1/TimeStep6.png" align="middle" width="600px"/>
+        <figcaption align="middle">Final step with curve.</figcaption>
+      </td>
+    </tr>
+    <br>
+    <tr>
+      <td>
+        <img src="images/part1/alt1.png" align="middle" width="600px"/>
+        <figcaption align="middle">Tweaked the points a bit.</figcaption>
+      </td>
+      <td>
+        <img src="images/part1/alt2.png" align="middle" width="600px"/>
+        <figcaption align="middle">Changed t for the previous one.</figcaption>
+      </td>
+    </tr>
+    <br>
+    <tr>
+      <td>
+        <img src="images/part1/star1.png" align="middle" width="600px"/>
+        <figcaption align="middle">I made a star.</figcaption>
+      </td>
+      <td>
+        <img src="images/part1/star2.png" align="middle" width="600px"/>
+        <figcaption align="middle">Here's the star with a different t.</figcaption>
+      </td>
+    </tr>
+  </table>
+</div>
+
+
+<h3 align="middle">Part 2: Bezier surfaces with separable 1D de Casteljau subdivision</h3>
+<p>
+    De Casteljau's algorithm can be extended to Bezier surfaces by
+    <ul>
+        <li>
+            applying de Casteljau's algorithm with parameter u to each row of control points
+        </li>
+        <li>
+            applying de Casteljau's algorithm with parameter v to all of the results of the previous steps
+        </li>
+    </ul>
+    This functionally interpolates each of the 4 rows of control points using u, then interpolates the four resulting interpolated points using v to get the single interpolated point from (u,v)
+</p>
+<td>
+    <img src="images/part2/teapot.png" align="middle" width="600px"/>
+    <figcaption align="left"> Where's Will Smith? I'm rubbing the lamp.</figcaption>
+</td>
+
+<h2 align="middle">Section II: Sampling</h2>
+
+<h3 align="middle">Part 3: Average normals for half-edge meshes</h3>
+I iterated through each face by calling getting the next of the twin of each half-edge. For each face, I accumulated the result face's normal method, then I used the unit function to normalize that sum.
+
+
+<div align="middle">
+    <table style="width=100%">
+        <tr>
+          <td>
+              <img src="images/part3/tea2.png" align="middle" width="600px"/>
+              <figcaption align="middle"> Edgy.</figcaption>
+          </td>
+          <td>
+              <img src="images/part3/tea1.png" align="middle" width="600px"/>
+              <figcaption align="middle"> Smooth operator🎵.</figcaption>
+          </td>
+        </tr>
+</table>
+</div>
+
+
+<h3 align="middle">Part 4: Half-edge flip</h3>
+<p>
+    Starting with a picture of the flip operation, it became a systematic process. I mapped each begining object to the after object, then figured out what transformations had to be applied to get it there. I began by following each half-edge and figuring out how each of it's quantities changed. Drawing pictures myself also helped. Keeping my code clean and systematic also helped a lot. It helped to think of what happened in one direction, then to think about what happened to the twins.
+</p>
+
+<div align="middle">
+    <table style="width=100%">
+        <tr>
+          <td>
+              <img src="images/part4/before.png" align="middle" width="600px"/>
+              <figcaption align="middle"> Pre-flip.</figcaption>
+          </td>
+          <td>
+              <img src="images/part4/after.png" align="middle" width="600px"/>
+              <figcaption align="middle"> Post-flip.</figcaption>
+          </td>
+        </tr>
+        <tr>
+          <td>
+              <img src="images/part4/divot2.png" align="middle" width="600px"/>
+              <figcaption align="middle"> Divot.</figcaption>
+          </td>
+          <td>
+              <img src="images/part4/divot1.png" align="middle" width="600px"/>
+              <figcaption align="middle"> Undivot.</figcaption>
+          </td>
+        </tr>
+        <tr>
+          <td>
+              <img src="images/part4/horus1.png" align="middle" width="600px"/>
+              <figcaption align="middle"> Flipped all the interior edges.</figcaption>
+          </td>
+          <td>
+              <img src="images/part4/horus2.png" align="middle" width="600px"/>
+              <figcaption align="middle"> Added an upsampled just cause it looked cool.</figcaption>
+          </td>
+        </tr>
+</table>
+</div>
+
+
+<h3 align="middle">Part 5: Half-edge split</h3>
+
+<p>
+    Splitting followed a similar process to flip. This time we also have to create a vertex, 6 new half-edges, 3 edges, and 2 new faces. I drew a picture and mapped each pointer to where it went in the after picture. Just like last time, thinking about what happened to the twins separately helped a lot. I've never been in a situation where keeping track of labels and pointers mattered so much:)
+</p>
+
+<div align="middle">
+    <table style="width=100%">
+        <tr>
+          <td>
+              <img src="images/part4/before.png" align="middle" width="600px"/>
+              <figcaption align="middle"> Pre-split.</figcaption>
+          </td>
+          <td>
+              <img src="images/part5/after.png" align="middle" width="600px"/>
+              <figcaption align="middle"> Post-split.</figcaption>
+          </td>
+        </tr>
+        <tr>
+          <td>
+              <img src="images/part5/cube1.png" align="middle" width="600px"/>
+              <figcaption align="middle"> No Split.</figcaption>
+          </td>
+          <td>
+              <img src="images/part5/cube2.png" align="middle" width="600px"/>
+              <figcaption align="middle"> Bannana Split!</figcaption>
+          </td>
+        </tr>
+        <br>
+        <tr>
+            <td>
+                <img src="images/part5/combo.png" align="middle" width="600px"/>
+                <figcaption align="middle"> I'm a lil teapot split and flipped.</figcaption>
+            </td>
+            <td>
+                <img src="images/part5/star.png" align="middle" width="600px"/>
+                <figcaption align="middle"> You're my sunflower🎵.</figcaption>
+            </td>
+        </tr>
+</table>
+</div>
+
+<h3 align="middle">Part 6: Loop subdivision for mesh upsampling</h3>
+<p>
+    I followed the steps in the spec. I computed new vertex and edge positions according to the formula. I figured out what the last edge was in the old ones, by doing a quick loop, then split until I saw my last_original_edge. Then I flipped the requried edges and copied over the new vertex positions.
+</p>
+<br>
+<br>
+<b>Maintaining corners by splitting</b>
+<p>
+    Upsampling seems to smooth out sharp corners and edges. You can lessen this effect by spliting interior edges a ton of times. Notice how the edges are maintained on the pre-split face.
+</p>
+<div align="middle">
+  <table style="width=100%">
+    <tr>
+      <td>
+        <img src="images/part6/edgy4.png" align="middle" width="400px"/>
+        <figcaption align="middle"> Cube, no pre-split.</figcaption>
+      </td>
+      <td>
+        <img src="images/part6/edgy3.png" align="middle" width="400px"/>
+        <figcaption align="middle"> Cube, no pre-split upsampled.</figcaption>
+      </td>
+      <td>
+        <img src="images/part6/edgy2.png" align="middle" width="400px"/>
+        <figcaption align="middle"> Cube, no pre-split upsampled a bunch.</figcaption>
+      </td>
+    </tr>
+    <br>
+    <tr>
+      <td>
+        <img src="images/part6/edgy7.png" align="middle" width="400px"/>
+        <figcaption align="middle"> Cube, pre-split.</figcaption>
+      </td>
+      <td>
+        <img src="images/part6/edgy6.png" align="middle" width="400px"/>
+        <figcaption align="middle"> Cube, pre-split upsampled.</figcaption>
+      </td>
+      <td>
+        <img src="images/part6/edgy5.png" align="middle" width="400px"/>
+        <figcaption align="middle"> Cube, pre-split upsampled a bunch.</figcaption>
+      </td>
+    </tr>
+    <br>
+  </table>
+</div>
+<br>
+<br>
+
+  <b>Maintaining symmetry by splitting</b>
+  <p>
+      Upsampling causes some weird asymmetry on the cube. You can lessen this effect by spliting interior edges on all faces. Notice how the symmetry holds better. It seems that the asymetry is occuring because there is only one edge per face and each diagonal edge points in a different direction. Splitting each face makes it so that each face has identical edge layouts. That preserves the symmetry better as you upsample.
+  </p>
+  <div align="middle">
+    <table style="width=100%">
+      <tr>
+        <td>
+          <img src="images/part6/edgy4.png" align="middle" width="400px"/>
+          <figcaption align="middle"> Cube, no pre-split.</figcaption>
+        </td>
+        <td>
+          <img src="images/part6/edgy3.png" align="middle" width="400px"/>
+          <figcaption align="middle"> Cube, no pre-split upsampled.</figcaption>
+        </td>
+        <td>
+          <img src="images/part6/edgy2.png" align="middle" width="400px"/>
+          <figcaption align="middle"> Cube, no pre-split upsampled a bunch.</figcaption>
+        </td>
+      </tr>
+      <br>
+      <tr>
+        <td>
+          <img src="images/part6/sym2.png" align="middle" width="400px"/>
+          <figcaption align="middle"> Cube, pre-split.</figcaption>
+        </td>
+        <td>
+          <img src="images/part6/sym3.png" align="middle" width="400px"/>
+          <figcaption align="middle"> Cube, pre-split upsampled.</figcaption>
+        </td>
+        <td>
+          <img src="images/part6/sym1.png" align="middle" width="400px"/>
+          <figcaption align="middle"> Cube, pre-split upsampled and a different angle.</figcaption>
+        </td>
+      </tr>
+      <br>
+    </table>
+</div>
+</body>
+</html>
