@@ -8,7 +8,6 @@
   <meta name="description" content="Amir Shahatit">
   <meta name="author" content="Amir Shahatit">
 
-  <!-- <link rel="stylesheet" href="css/styles.css?v=1.0"> -->
   <style>
   * {
     font-family: Verdana;
@@ -43,7 +42,6 @@ div.tab button {
 }
 /* Change background color of buttons on hover */
 div.tab button:hover {
-    /*background-color: #ddd;*/
     color: #2e2e2e;
 }
 svg {
@@ -56,7 +54,6 @@ svg:hover {
 }
 /* Create an active/current tablink class */
 div.tab button.active {
-    /*background-color: #ccc;*/
     color: #2e2e2e;
 }
 /* Style the tab content */
@@ -88,22 +85,16 @@ h:after {
 ti {
   font-size: 20px;
   line-height: 30px;
+  display: block;
+  margin-bottom: 10px; /* Adds spacing between titles */
 }
-/*ti:after {
-    content:"\a";
-    white-space:pre;
-}*/
+
 te {
   font-size: 14px;
+  display: block;
+  margin-bottom: 20px; /* Adds more spacing between descriptions */
 }
-te:after {
-    content:"\a\a";
-    white-space:pre;
-}
-te:before {
-    content:"\a";
-    white-space:pre;
-}
+
 div.copy {
   margin-top: 20px;
   font-size: 12px;
@@ -121,19 +112,15 @@ table {
 
 <script>
 function openTab(evt, tabName) {
-    // Declare all variables
     var i, tabcontent, tablinks;
-    // Get all elements with class="tabcontent" and hide them
     tabcontent = document.getElementsByClassName("tabcontent");
     for (i = 0; i < tabcontent.length; i++) {
         tabcontent[i].style.display = "none";
     }
-    // Get all elements with class="tablinks" and remove the class "active"
     tablinks = document.getElementsByClassName("tablinks");
     for (i = 0; i < tablinks.length; i++) {
         tablinks[i].className = tablinks[i].className.replace(" active", "");
     }
-    // Show the current tab, and add an "active" class to the button that opened the tab
     document.getElementById(tabName).style.display = "block";
     evt.currentTarget.className += " active";
 }
@@ -152,7 +139,7 @@ function openTab(evt, tabName) {
 
   <div id="Home" class="tabcontent" style="display: block;">
     <name>Amir Shahatit</name>
-    <h> I'm a software engineer at Voleon working on quantitative finance problems. I'm passionate about education, languages and tacos.</h>
+    <h> I'm a security engineer at Zip, specializing in customer IAM, internal authorization, and application security. I'm passionate about education, languages, and tacos.</h>
     <table>
       <tr>
         <td>
@@ -170,65 +157,71 @@ function openTab(evt, tabName) {
 
   <div id="Experience" class="tabcontent">
     <h>Experience</h>
-    <ti>
-        Software Engineer at <a href="https://voleon.com">Voleon</a>, May 2020 - Present
-    </ti>
+    
+    <ti>2022 - Now: Software Engineer (Security) @ <a href="https://ziphq.com">Zip</a>, San Francisco, CA</ti>
+    <te>
+        Restricted internal admin access with minimal friction. Automatically provisioned access for employees based on job function
+      </te>
+      <te>
+
+        Productized SSO setup and security recommendations, leading to over 95% of users signing in exclusively with SSO.<br>
+      </te>
+      <te>
+
+        Coordinated the migration and rotation of all source code secrets into AWS SM, collaborating across every engineering team at Zip.<br>
+      </te>
+      <te>
+
+        Created a developer security and security awareness program.
+    </te>
+    
+    <ti>2022: Software Engineer (Security) @ <a href="https://brex.com">Brex</a>, Remote</ti>
+    <te>
+        Automated the process for onboarding customers to SSO with SAML and OIDC, saving roughly 5 hours of engineering time per week.<br>
+      </te>
+
         <te>
-            Implemented support for new instrument classes resulting in significant PNL improvement over baseline in simulation.
-	    Collaborated with researchers to create and refine analytic values modeling financial qualities of different instruments
-	    Upgraded our codebase to a new version of pandas and added robust testing to preserve of important calculations.
-        </te>
- 
-    <ti>Undergraduate Researcher at the <a href="https://netsys.cs.berkeley.edu">Netsys Lab</a> with Scott Shenker, January 2019 - Present</ti>
-        <te>
-            Worked with Aisha Mushtaq on edge computing prpjects including a framework with which to write edge enabled applications in a resilient manner. Paper under submission regarding an optimal policy for state sharing.
-            Also, worked with Edward Oakes on a storage system for serverless computing infrastructures.
-        </te>
-    <ti>
-        Software Engineering Intern at <a href="https://voleon.com">Voleon</a>, May 2018 - August 2018
-    </ti>
-        <te>
-            Worked on scheduling of large data processing jobs with Apache Airflow and Mesos.
-        </te>
-    <ti>
-        Head Teaching Assistant, <a href="http://cs88-website.github.io/">CompSci 88</a> Fall 2018 - Present, Data 8 Fall 2017 - Spring 2018
-    </ti>
-        <te>
-            Created course content, ran office hours, and taught a lab of 35 students.
-        </te>
-    <ti>
-        Software Engineering Intern at <a href="https://www.intuit.com">Intuit</a>, May 2017 - August 2017
-    </ti>
-        <te>
-            Worked on a system for assigning taxpayers to tax professionals and recording legal consents.
-        </te>
-    <ti>
-        Undergraduate Researcher at the Berkeley <a href="http://www.retinalab.berkeley.edu/portfolio/">Retina Lab</a>, January 2019 - June 2019
-    </ti>
-        <te>
-            Working with Rowland Taylor on understanding how neurons in the visual system encode natural images.
-        </te>
-</div>
+
+        Created an interface for checking access to resources within the centralized authorization server.
+    </te>
+    
+
+    <ti>Software Engineer at <a href="https://voleon.com">Voleon Capital Management</a>, May 2020 - December 2021</ti>
+    <te>
+      Implemented support for new financial instrument classes, optimizing PNL metrics. Collaborated with researchers on analytics for asset pricing and helped transition to a new version of the pandas library.
+    </te>
+
+    <ti>Software Engineering Intern at <a href="https://www.intuit.com">Intuit</a>, May 2017 - August 2017</ti>
+    <te>
+      Worked on system assignment processes for matching taxpayers with tax professionals, and contributed to legal consent tracking infrastructure.
+    </te>
+    
+    <ti>Undergraduate Researcher at <a href="https://netsys.cs.berkeley.edu">Netsys Lab</a>, January 2019 - June 2019</ti>
+    <te>
+      Conducted research on edge computing and resilience, collaborating with Professor Scott Shenker. Co-authored a paper on optimal state-sharing policies.
+    </te>
+
+    <ti>Teaching Assistant for <a href="http://cs88-website.github.io/">CS 88</a>, Fall 2018 - Spring 2019</ti>
+    <te>
+      Led labs, created course content, and held office hours, instructing over 35 students.
+    </te>
+  </div>
 
   <div id="Portfolio" class="tabcontent">
     <h>Portfolio</h>
     <ti>Here's my <a href="assets/resume.pdf">resume</a>.</ti>
-    <te></te>
     <ti>Course Content</ti>
-    <te>I revamped our wheel of fortune <a href="https://cs88-website.github.io/proj/wheel/">project </a> and <a href="http://cs88-website.github.io/lab/lab09/">Lab 09</a> for CS 88.</te>
+    <te>Revamped course projects for the CS 88 curriculum, including <a href="https://cs88-website.github.io/proj/wheel/">Wheel of Fortune</a>.</te>
     <ti>Graphics Projects</ti>
-    <te><a href="assets/RaytracerI/index.html">Ray tracer I </a>, <a href="assets/RaytracerII/index.html">Ray tracer II </a>, <a href="assets/Rasterizer/index.html">Rasterization</a>, and <a href="assets/MeshEdit/index.html">MeshEdit</a>.</te>
-
-    <!-- <ti><a href="https://github.com/leoadberg/Intuit-Hackathon-Project">Jumbo Jobs</a></ti>
-    <te>This website was made for an Intuit-sponsored hackathon. It allowed the user to search for specific industries in different locations to see job growth, average income, and more. Because it used PHP and Python, the backend is no longer running, but all the code is still available!</te> -->
-</div>
+    <te><a href="assets/RaytracerI/index.html">Ray tracer I</a>, <a href="assets/RaytracerII/index.html">Ray tracer II</a>, <a href="assets/Rasterizer/index.html">Rasterization</a>, and <a href="assets/MeshEdit/index.html">MeshEdit</a>.</te>
+  </div>
 
   <div id="Contact" class="tabcontent">
     <h>Contact</h>
-    <ti>Send me an email at <a href="mailto:ashahatit@berkeley.edu" target="_top">ashahatit@berkeley.edu</a>.</ti>
+    <ti>Feel free to reach out at <a href="mailto:ashahatit@berkeley.edu">ashahatit@berkeley.edu</a>.</ti>
   </div>
 
-<div class="copy">&copy; 2021 Amir Shahatit</div>
+  <div class="copy">&copy; 2024 Amir Shahatit</div>
 
 </body>
 </html>
